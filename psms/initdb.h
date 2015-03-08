@@ -60,10 +60,10 @@ QSqlError initDb()
     products << "Peanut" << "Pear" << "Pepper" << "Pumpkin" << "Radish" << "Raisin" << "Strawberry";
     products << "Tomato" << "Watermelon" << "Zucchini";
 
-    for (QString product: products){
+    foreach (QString product, products){
         if (!q.prepare(QLatin1String("insert into products(title, price, stock) values(?, ?, ?)")))
             return q.lastError();
-        Qvariant productID = addProduct(q, tr(product), randomFloat(0, 10.0), randomInt(0, 500));
+        QVariant productID = addProduct(q, product, randomFloat(0, 10.0), randomInt(0, 500));
 
         QList<QDateTime> transactTime;
         for(int i = 0; i < 100; i++){

@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QtWidgets>
+#include <QtSql>
 
 namespace Ui {
 class MainWindow;
@@ -17,6 +19,9 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    QSqlTableModel *productModel;
+    int productIndex;
+    void showError(const QSqlError &err);
 };
 
 #endif // MAINWINDOW_H
