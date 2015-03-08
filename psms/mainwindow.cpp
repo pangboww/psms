@@ -22,7 +22,8 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     productIndex = 0;
-    productModel = new QSqlTableModel(ui->productList);
+
+    productModel = new QSqlTableModel(ui->productListView);
     productModel->setTable("products");
     productModel->select();
     productModel->setHeaderData(0, Qt::Horizontal, tr("Name"));
@@ -32,14 +33,31 @@ MainWindow::MainWindow(QWidget *parent) :
         return;
     }
 
-    ui->productList->setModel(productModel);
-    ui->productList->setModelColumn(1);
+    ui->productListView->setModel(productModel);
+    ui->productListView->setModelColumn(1);
 
-    connect(ui->productList->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
+    transactionModel = new QSqlTableModel(ui->transactionTableView);
+    transactionModel->setTable("transactions");
+    transactionModel->select();
+    transactionModel->setFilter("id_product = 0");
+    transactionModel->setHeaderData(1, Qt::Horizontal, tr("Amount"));
+    transactionModel->setHeaderData(2,Qt::Horizontal, tr("Time"));
+
+    if (!transactionModel->select()) {
+        showError(transactionModel->lastError());
+        return;
+    }
+
+    ui->transactionTableView->setModel(transactionModel);
+    ui->transactionTableView->hideColumn(0);
+    ui->transactionTableView->hideColumn(3);
+
+    connect(ui->productListView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
             this, SLOT(handleSelectionChanged(QItemSelection)));
-
     connect(this, SIGNAL(productIndexChanged()),
             this, SLOT(focusToProduct()));
+    connect(this, SIGNAL(productIndexChanged()),
+            this, SLOT(refreshTransactionList()));
 
     focusToProduct();
 }
@@ -62,6 +80,12 @@ void MainWindow::focusToProduct(){
     ui->label_price->setText(price.toString());
     ui->label_stock->setText(stock.toString());
 }
+
+void MainWindow::refreshTransactionList(){
+    QString f = QString("id_product = %1").arg(productIndex);
+    transactionModel->setFilter(f);
+}
+
 
 void MainWindow::showError(const QSqlError &err)
 {

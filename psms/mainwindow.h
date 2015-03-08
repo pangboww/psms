@@ -22,6 +22,7 @@ signals:
 private slots:
     void handleSelectionChanged(const QItemSelection&);
     void focusToProduct();
+    void refreshTransactionList();
 private:
     Ui::MainWindow *ui;
     QSqlTableModel *productModel;
