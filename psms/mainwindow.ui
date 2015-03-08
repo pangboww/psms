@@ -71,7 +71,7 @@
         <item>
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="1" column="1">
-           <widget class="QLabel" name="label_7">
+           <widget class="QLabel" name="label_price">
             <property name="text">
              <string>TextLabel</string>
             </property>
@@ -91,7 +91,7 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QLabel" name="label_6">
+           <widget class="QLabel" name="label_title">
             <property name="text">
              <string>TextLabel</string>
             </property>
@@ -101,7 +101,7 @@
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QLabel" name="label_8">
+           <widget class="QLabel" name="label_stock">
             <property name="text">
              <string>TextLabel</string>
             </property>
@@ -195,11 +195,7 @@
          </attribute>
          <layout class="QHBoxLayout" name="horizontalLayout_8">
           <item>
-           <widget class="QListView" name="listView">
-            <property name="autoFillBackground">
-             <bool>true</bool>
-            </property>
-           </widget>
+           <widget class="QTableView" name="tableView"/>
           </item>
          </layout>
         </widget>

@@ -13,13 +13,19 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
+signals:
+    void productIndexChanged();
+private slots:
+    void handleSelectionChanged(const QItemSelection&);
+    void focusToProduct();
 private:
     Ui::MainWindow *ui;
     QSqlTableModel *productModel;
+    QSqlTableModel *transactionModel;
     int productIndex;
     void showError(const QSqlError &err);
 };
