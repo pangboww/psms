@@ -12,3 +12,10 @@ AddProductDialog::~AddProductDialog()
 {
     delete ui;
 }
+
+void AddProductDialog::accept(){
+    emit addProduct(ui->titleEdit->text(),
+                    ui->priceEdit->text(),
+                    ui->stockEdit->text());
+    this->hide();
+}

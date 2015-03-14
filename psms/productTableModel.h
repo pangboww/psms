@@ -13,7 +13,7 @@ class ProductTableModel : public QSqlTableModel
 public:
     ProductTableModel(QWidget *parent = 0);
     ~ProductTableModel();
-    void addProduct(QString *name, float price, int stock);
+    void addProduct(QString title, QString price, QString stock);
     void searchProduct(QString *name);
 };
 
