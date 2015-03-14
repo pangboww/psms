@@ -58,8 +58,6 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(refreshTransactionList()));
 
     emit productIndexChanged();
-
-
 }
 
 MainWindow::~MainWindow()
@@ -120,6 +118,18 @@ void MainWindow::on_inputPushButton_clicked()
 //        record.setValue(3, index);
 //        transactionModel->insertRecord(1,record);
     }
+}
 
+void MainWindow::on_addProductButton_clicked()
+{
+    AddProductDialog *dialog = new AddProductDialog(this);
+    dialog->show();
+    connect(dialog,
+            SIGNAL(addProduct(QString,QString,QString)),
+            this,
+            SLOT(confirmAddProduct(QString,QString,QString)));
+}
 
+void MainWindow::confirmAddProduct(QString title, QString price, QString stock){
+    productModel->addProduct(title, price, stock);
 }

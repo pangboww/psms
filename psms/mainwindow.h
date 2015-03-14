@@ -5,6 +5,7 @@
 #include <QtWidgets>
 #include <QtSql>
 #include <producttablemodel.h>
+#include <addproductdialog.h>
 
 namespace Ui {
 class MainWindow;
@@ -26,9 +27,11 @@ private slots:
     void refreshTransactionList();
     void on_inputPushButton_clicked();
 
+    void on_addProductButton_clicked();
+    void confirmAddProduct(QString,QString,QString);
 private:
     Ui::MainWindow *ui;
-    QSqlTableModel *productModel;
+    ProductTableModel *productModel;
     QSqlTableModel *transactionModel;
     int productIndex;
     void showError(const QSqlError &err);

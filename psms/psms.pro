@@ -15,10 +15,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    producttablemodel.cpp
+    producttablemodel.cpp \
+    addproductdialog.cpp
 
 HEADERS  += mainwindow.h \
     initdb.h \
-    producttablemodel.h
+    producttablemodel.h \
+    addproductdialog.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    addproductdialog.ui

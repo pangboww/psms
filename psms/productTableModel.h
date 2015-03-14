@@ -1,12 +1,20 @@
 #ifndef PRODUCTTABLEMODEL_H
 #define PRODUCTTABLEMODEL_H
 
+#include <QtWidgets>
+#include <QtSql>
 
-class productTableModel : public QSqlTableModel
+
+class ProductTableModel : public QSqlTableModel
 {
+    Q_OBJECT
+
+
 public:
-    productTableModel();
-    ~productTableModel();
+    ProductTableModel(QWidget *parent = 0);
+    ~ProductTableModel();
+    void addProduct(QString *name, float price, int stock);
+    void searchProduct(QString *name);
 };
 
 #endif // PRODUCTTABLEMODEL_H

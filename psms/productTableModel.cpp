@@ -1,11 +1,12 @@
-#include "productTableModel.h"
+#include "producttablemodel.h"
 
-productTableModel::productTableModel()
+ProductTableModel::ProductTableModel(QWidget *parent):
+    QSqlTableModel(parent)
 {
 
 }
 
-productTableModel::~productTableModel()
+ProductTableModel::~ProductTableModel()
 {
 
 }
