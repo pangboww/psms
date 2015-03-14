@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QtWidgets>
 #include <QtSql>
+#include <producttablemodel.h>
 
 namespace Ui {
 class MainWindow;
@@ -23,6 +24,8 @@ private slots:
     void handleSelectionChanged(const QItemSelection&);
     void focusToProduct();
     void refreshTransactionList();
+    void on_inputPushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     QSqlTableModel *productModel;

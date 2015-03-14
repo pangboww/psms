@@ -6,6 +6,8 @@
 #include <QModelIndex>
 #include <QtDebug>
 #include <QAbstractItemView>
+#include <QDateTime>
+//#include <QSqlRecord>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -23,11 +25,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     productIndex = 0;
 
-    productModel = new QSqlTableModel(ui->productListView);
+    productModel = new ProductTableModel(ui->productListView);
     productModel->setTable("products");
-    productModel->select();
-    productModel->setHeaderData(0, Qt::Horizontal, tr("Name"));
-
     if (!productModel->select()) {
         showError(productModel->lastError());
         return;
@@ -38,8 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     transactionModel = new QSqlTableModel(ui->transactionTableView);
     transactionModel->setTable("transactions");
-    transactionModel->select();
-    transactionModel->setFilter("id_product = 0");
+    transactionModel->setSort(2, Qt::DescendingOrder);
     transactionModel->setHeaderData(1, Qt::Horizontal, tr("Amount"));
     transactionModel->setHeaderData(2,Qt::Horizontal, tr("Time"));
 
@@ -59,7 +57,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(productIndexChanged()),
             this, SLOT(refreshTransactionList()));
 
-    focusToProduct();
+    emit productIndexChanged();
+
+
 }
 
 MainWindow::~MainWindow()
@@ -82,7 +82,7 @@ void MainWindow::focusToProduct(){
 }
 
 void MainWindow::refreshTransactionList(){
-    QString f = QString("id_product = %1").arg(productIndex);
+    QString f = QString("id_product = %1").arg(productIndex+1);
     transactionModel->setFilter(f);
 }
 
@@ -91,4 +91,35 @@ void MainWindow::showError(const QSqlError &err)
 {
     QMessageBox::critical(this, "Unable to initialize Database",
                 "Error initializing database: " + err.text());
+}
+
+void MainWindow::on_inputPushButton_clicked()
+{
+    QString add = ui->addInput->text();
+    QString minus = ui->minusInput->text();
+
+    if((!add.isEmpty())&&(!minus.isEmpty())){
+        qDebug() << "Both inputs have value!";
+        return;
+    }
+    if(!minus.isEmpty()){
+        QVariant v = transactionModel->record(3).value(0);
+        qDebug() << v;
+        v = transactionModel->record(3).value(1);
+        qDebug() << v;
+        v = transactionModel->record(3).value(2);
+        qDebug() << v;
+        v = transactionModel->record(3).value(3);
+        qDebug() << v;
+        QSqlRecord record = transactionModel->record();
+        transactionModel->insertRecord(1,record);
+//        QVariant index = productModel->record(productIndex).value(0);
+//        QSqlRecord record = transactionModel->record();
+//        record.setValue(1, QVariant(minus.toInt()));
+//        record.setValue(2, QVariant(QDateTime::currentDateTime()));
+//        record.setValue(3, index);
+//        transactionModel->insertRecord(1,record);
+    }
+
+
 }
