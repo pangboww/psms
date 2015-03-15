@@ -26,12 +26,14 @@ private slots:
     void focusToProduct();
     void refreshTransactionList();
     void on_inputPushButton_clicked();
-
     void on_addProductButton_clicked();
     void confirmAddProduct(QString,QString,QString);
+    void on_lineEdit_textChanged(const QString &arg1);
+
 private:
     Ui::MainWindow *ui;
     ProductTableModel *productModel;
+    QSortFilterProxyModel *filterModel;
     QSqlTableModel *transactionModel;
     int productIndex;
     void showError(const QSqlError &err);

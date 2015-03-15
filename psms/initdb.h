@@ -79,6 +79,7 @@ QSqlError initDb()
             addTransaction(q, randomInt(1,10), transactTime[i], productID);
         }
     }
+
     return QSqlError();
 }
 

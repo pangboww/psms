@@ -31,8 +31,10 @@ MainWindow::MainWindow(QWidget *parent) :
         showError(productModel->lastError());
         return;
     }
-
-    ui->productListView->setModel(productModel);
+    filterModel = new QSortFilterProxyModel(this);
+    filterModel->setSourceModel(productModel);
+    filterModel->setFilterKeyColumn(1);
+    ui->productListView->setModel(filterModel);
     ui->productListView->setModelColumn(1);
 
     transactionModel = new QSqlTableModel(ui->transactionTableView);
@@ -132,4 +134,13 @@ void MainWindow::on_addProductButton_clicked()
 
 void MainWindow::confirmAddProduct(QString title, QString price, QString stock){
     productModel->addProduct(title, price, stock);
+    productModel->selectRow(productModel->rowCount());
+}
+
+void MainWindow::on_lineEdit_textChanged(const QString &arg1)
+{
+    QString s = QString(".?%1.?").arg(arg1);
+    QRegExp regExp = QRegExp(s);
+    regExp.setCaseSensitivity(Qt::CaseInsensitive);
+    filterModel->setFilterRegExp(regExp);
 }
