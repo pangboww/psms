@@ -68,7 +68,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->purchaseTableView->hideColumn(0);
     ui->purchaseTableView->hideColumn(3);
 
-    providerModel = new QSqlTableModel(ui->providerBox);
+    //Provider Choose ComboBox
+    providerModel = new ProviderTableModel(ui->providerBox);
     providerModel->setTable("providers");
     providerModel->sort(1, Qt::AscendingOrder);
     if (!providerModel->select()) {
@@ -84,8 +85,11 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(focusToProduct()));
     connect(this, SIGNAL(productIndexChanged()),
             this, SLOT(refreshTransactionList()));
+    connect(ui->providerBox,SIGNAL(currentIndexChanged(int)),
+            this, SLOT(handleProviderChanged(int)));
 
     emit productIndexChanged();
+    ui->providerBox->currentIndexChanged(0);
 }
 
 MainWindow::~MainWindow()
@@ -120,34 +124,7 @@ void MainWindow::showError(const QSqlError &err)
                 "Error initializing database: " + err.text());
 }
 
-void MainWindow::on_inputPushButton_clicked()
-{
-    QString add = ui->addInput->text();
-    QString minus = ui->minusInput->text();
 
-    if((!add.isEmpty())&&(!minus.isEmpty())){
-        qDebug() << "Both inputs have value!";
-        return;
-    }
-    if(!minus.isEmpty()){
-        QVariant v = saleModel->record(3).value(0);
-        qDebug() << v;
-        v = saleModel->record(3).value(1);
-        qDebug() << v;
-        v = saleModel->record(3).value(2);
-        qDebug() << v;
-        v = saleModel->record(3).value(3);
-        qDebug() << v;
-        QSqlRecord record = saleModel->record();
-        saleModel->insertRecord(1,record);
-//        QVariant index = productModel->record(productIndex).value(0);
-//        QSqlRecord record = saleModel->record();
-//        record.setValue(1, QVariant(minus.toInt()));
-//        record.setValue(2, QVariant(QDateTime::currentDateTime()));
-//        record.setValue(3, index);
-//        saleModel->insertRecord(1,record);
-    }
-}
 
 void MainWindow::on_addProductButton_clicked()
 {
@@ -162,6 +139,7 @@ void MainWindow::on_addProductButton_clicked()
 void MainWindow::confirmAddProduct(QString title, QString price, QString stock){
     productModel->addProduct(title, price, stock);
     productModel->selectRow(productModel->rowCount());
+    productModel->select();
 }
 
 void MainWindow::on_lineEdit_textChanged(const QString &arg1)
@@ -170,4 +148,39 @@ void MainWindow::on_lineEdit_textChanged(const QString &arg1)
     QRegExp regExp = QRegExp(s);
     regExp.setCaseSensitivity(Qt::CaseInsensitive);
     filterModel->setFilterRegExp(regExp);
+}
+
+void MainWindow::on_clearButton_clicked()
+{
+    ui->lineEdit->setText("");
+}
+
+void MainWindow::on_addProviderButton_clicked()
+{
+    AddProviderDialog *dialog = new AddProviderDialog(this);
+    dialog->show();
+    connect(dialog,
+            SIGNAL(addProvider(QString)),
+            this,
+            SLOT(confirmAddProvider(QString)));
+}
+
+void MainWindow::confirmAddProvider(QString name){
+    providerModel->addProvider(name);
+    providerModel->select();
+    ui->providerBox->setCurrentIndex(0);
+}
+
+void MainWindow::handleProviderChanged(int i){
+    providerIndex = providerModel->itemData(providerModel->index(i, 0))[0].toInt();
+    qDebug() << providerIndex;
+}
+
+void MainWindow::on_sellPushButton_clicked()
+{
+    if(!ui->sellEdit->text().isEmpty()){
+        int amount =  ui->sellEdit->text().toInt();
+        if(amount == 0)return;
+        qDebug() << amount;
+    }
 }

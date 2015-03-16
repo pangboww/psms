@@ -9,7 +9,6 @@ class ProductTableModel : public QSqlTableModel
 {
     Q_OBJECT
 
-
 public:
     ProductTableModel(QWidget *parent = 0);
     ~ProductTableModel();
