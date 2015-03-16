@@ -38,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->productListView->setModelColumn(1);
 
     transactionModel = new QSqlTableModel(ui->transactionTableView);
-    transactionModel->setTable("transactions");
+    transactionModel->setTable("sells");
     transactionModel->setSort(2, Qt::DescendingOrder);
     transactionModel->setHeaderData(1, Qt::Horizontal, tr("Amount"));
     transactionModel->setHeaderData(2,Qt::Horizontal, tr("Time"));

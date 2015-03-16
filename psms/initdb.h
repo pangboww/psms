@@ -11,10 +11,23 @@ QVariant addProduct(QSqlQuery &q, const QString &title, float price, int stock){
     return q.lastInsertId();
 }
 
-void addTransaction(QSqlQuery &q, int amount, const QDateTime &time, const QVariant &productID){
+void addProvider(QSqlQuery &q, const QString &name){
+    q.addBindValue(name);
+    q.exec();
+}
+
+void addSell(QSqlQuery &q, int amount, const QDateTime &time, const QVariant &productID){
     q.addBindValue(amount);
     q.addBindValue(time);
     q.addBindValue(productID);
+    q.exec();
+}
+
+void addBuy(QSqlQuery &q, int amount, const QDateTime &time, const QVariant &productID, int providerID){
+    q.addBindValue(amount);
+    q.addBindValue(time);
+    q.addBindValue(productID);
+    q.addBindValue(providerID);
     q.exec();
 }
 
@@ -50,8 +63,13 @@ QSqlError initDb()
     QSqlQuery q;
     if (!q.exec(QLatin1String("create table products(id integer primary key, title varchar not null, price float not null, stock integer check(stock>=0) default 0)")))
         return q.lastError();
-    if (!q.exec(QLatin1String("create table transactions(id integer primary key, amount integer, time datetime, id_product integer, foreign key(id_product) references products(id))")))
+    if (!q.exec(QLatin1String("create table sells(id integer primary key, amount integer, time datetime, id_product integer, foreign key(id_product) references products(id))")))
         return q.lastError();
+    if (!q.exec(QLatin1String("create table providers(id integer primary key, name varchar not null)")))
+        return q.lastError();
+    if (!q.exec(QLatin1String("create table buys(id integer primary key, amount integer, time datetime, id_product integer, id_provider integer, foreign key(id_product) references products(id),foreign key(id_provider) references providers(id))")))
+        return q.lastError();
+
 
     QList<QString> products;
     products << "Apple" << "Apricot" << "Aubergine" << "Avocado" << "Banana" << "Broccoli" << "Carrot";
@@ -59,6 +77,16 @@ QSqlError initDb()
     products << "Lemon" << "Mango" << "Melon" << "Mushroom" << "Nut" << "Olive" << "Orange" << "Pea";
     products << "Peanut" << "Pear" << "Pepper" << "Pumpkin" << "Radish" << "Raisin" << "Strawberry";
     products << "Tomato" << "Watermelon" << "Zucchini";
+
+    QList<QString> providers;
+    providers << "Lucas" << "Nathan" << "Enzo" << "Léo" << "Gabriel" << "Louis" << "Hugo" << "Raphaël";
+    providers << "Emma"	<< "Léa" << "Chloé" << "Inès" << "Manon" << "Jade" << "Lola" << "Camille";
+
+    foreach(QString provider, providers){
+        if (!q.prepare(QLatin1String("insert into providers(name) values(?)")))
+            return q.lastError();
+        addProvider(q, provider);
+    }
 
     foreach (QString product, products){
         if (!q.prepare(QLatin1String("insert into products(title, price, stock) values(?, ?, ?)")))
@@ -73,12 +101,28 @@ QSqlError initDb()
             transactTime << dt;
         }
         qSort(transactTime);
-        if (!q.prepare(QLatin1String("insert into transactions(amount, time, id_product) values(?, ?, ?)")))
+        if (!q.prepare(QLatin1String("insert into sells(amount, time, id_product) values(?, ?, ?)")))
             return q.lastError();
         for(int i = 0; i < 100; i++){
-            addTransaction(q, randomInt(1,10), transactTime[i], productID);
+            addSell(q, randomInt(1,10), transactTime[i], productID);
+        }
+
+        transactTime.clear();
+        for(int i = 0; i < 10; i++){
+            QTime t(randomInt(9,18), randomInt(0,60), randomInt(0,60));
+            QDate d(randomInt(2010,2015), randomInt(1,13), randomInt(1,29));
+            QDateTime dt(d, t);
+            transactTime << dt;
+        }
+        qSort(transactTime);
+        if (!q.prepare(QLatin1String("insert into buys(amount, time, id_product, id_provider) values(?, ?, ?, ?)")))
+            return q.lastError();
+        for(int i = 0; i < 10; i++){
+            addBuy(q, randomInt(100,200), transactTime[i], productID, randomInt(1, providers.size()));
         }
     }
+
+
 
     return QSqlError();
 }
