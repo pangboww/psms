@@ -14,6 +14,8 @@ public:
     ~ProductTableModel();
     void addProduct(QString title, QString price, QString stock);
     void searchProduct(QString *name);
+    bool sell(int amount, int productIndex);
+    void buy(int amount, int productIndex);
 };
 
 #endif // PRODUCTTABLEMODEL_H

@@ -34,3 +34,29 @@ void ProductTableModel::addProduct(QString title, QString price, QString stock){
                     lastError().text();
     }
 }
+
+bool ProductTableModel::sell(int amount, int productIndex){
+    database().transaction();
+    int stock = data(index(productIndex, 3)).toInt();
+    if (amount > stock) return false;
+    stock -= amount;
+    setData(index(productIndex,3), stock);
+    if(submitAll()) {
+        database().commit();
+        return true;
+    } else {
+        database().rollback();
+        qDebug() << "Database Write Error" <<
+                    "The database reported an error: " <<
+                    lastError().text();
+        return false;
+    }
+
+}
+
+void ProductTableModel::buy(int amount, int productID){
+
+
+}
+
+

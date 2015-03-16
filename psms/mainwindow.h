@@ -8,6 +8,7 @@
 #include <addproductdialog.h>
 #include <addproviderdialog.h>
 #include <providertablemodel.h>
+#include <saletablemodel.h>
 
 namespace Ui {
 class MainWindow;
@@ -41,7 +42,7 @@ private:
     ProductTableModel *productModel;
     QSortFilterProxyModel *filterModel;
     ProviderTableModel *providerModel;
-    QSqlTableModel *saleModel;
+    SaleTableModel *saleModel;
     QSqlRelationalTableModel *purchaseModel;
     int productIndex;
     int providerIndex;

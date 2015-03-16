@@ -38,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->productListView->setModelColumn(1);
 
     //Sale Record View
-    saleModel = new QSqlTableModel(ui->saleTableView);
+    saleModel = new SaleTableModel(ui->saleTableView);
     saleModel->setTable("sales");
     saleModel->setSort(2, Qt::DescendingOrder);
     saleModel->setHeaderData(1, Qt::Horizontal, tr("Amount"));
@@ -112,7 +112,8 @@ void MainWindow::focusToProduct(){
 }
 
 void MainWindow::refreshTransactionList(){
-    QString f = QString("id_product = %1").arg(productIndex+1);
+    int productID = productModel->itemData(productModel->index(productIndex, 0))[0].toInt();
+    QString f = QString("id_product = %1").arg(productID);
     saleModel->setFilter(f);
     purchaseModel->setFilter(f);
 }
@@ -181,6 +182,9 @@ void MainWindow::on_sellPushButton_clicked()
     if(!ui->sellEdit->text().isEmpty()){
         int amount =  ui->sellEdit->text().toInt();
         if(amount == 0)return;
-        qDebug() << amount;
+        saleModel->addSaleRecord(productIndex,amount);
+        refreshTransactionList();
+        productModel->sell(amount, productIndex);
+        focusToProduct();
     }
 }
