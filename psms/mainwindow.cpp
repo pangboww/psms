@@ -52,6 +52,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->saleTableView->hideColumn(0);
     ui->saleTableView->hideColumn(3);
 
+    //Purchase Record View
     purchaseModel = new QSqlRelationalTableModel(ui->purchaseTableView);
     purchaseModel->setTable("purchases");
     purchaseModel->setRelation(4, QSqlRelation("providers","id","name"));
@@ -67,6 +68,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->purchaseTableView->hideColumn(0);
     ui->purchaseTableView->hideColumn(3);
 
+    providerModel = new QSqlTableModel(ui->providerBox);
+    providerModel->setTable("providers");
+    providerModel->sort(1, Qt::AscendingOrder);
+    if (!providerModel->select()) {
+        showError(providerModel->lastError());
+        return;
+    }
+    ui->providerBox->setModel(providerModel);
+    ui->providerBox->setModelColumn(1);
 
     connect(ui->productListView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
             this, SLOT(handleSelectionChanged(QItemSelection)));
@@ -100,6 +110,7 @@ void MainWindow::focusToProduct(){
 void MainWindow::refreshTransactionList(){
     QString f = QString("id_product = %1").arg(productIndex+1);
     saleModel->setFilter(f);
+    purchaseModel->setFilter(f);
 }
 
 

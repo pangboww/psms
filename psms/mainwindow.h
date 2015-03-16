@@ -34,6 +34,7 @@ private:
     Ui::MainWindow *ui;
     ProductTableModel *productModel;
     QSortFilterProxyModel *filterModel;
+    QSqlTableModel *providerModel;
     QSqlTableModel *saleModel;
     QSqlRelationalTableModel *purchaseModel;
     int productIndex;
