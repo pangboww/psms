@@ -218,22 +218,32 @@
       <item>
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <property name="usesScrollButtons">
          <bool>false</bool>
         </property>
-        <widget class="QWidget" name="tab_1">
+        <widget class="QWidget" name="saleRecordTab">
          <attribute name="title">
-          <string>Sales Record</string>
+          <string>Sale Record</string>
          </attribute>
          <layout class="QHBoxLayout" name="horizontalLayout_8">
           <item>
-           <widget class="QTableView" name="transactionTableView"/>
+           <widget class="QTableView" name="saleTableView"/>
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="tab_2">
+        <widget class="QWidget" name="purchaseRecordTab">
+         <attribute name="title">
+          <string>Purchase Record</string>
+         </attribute>
+         <layout class="QHBoxLayout" name="horizontalLayout_12">
+          <item>
+           <widget class="QTableView" name="purchaseTableView"/>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="GraphTab">
          <attribute name="title">
           <string>Graph        </string>
          </attribute>

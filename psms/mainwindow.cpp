@@ -23,8 +23,8 @@ MainWindow::MainWindow(QWidget *parent) :
         return;
     }
 
+    //Product View
     productIndex = 0;
-
     productModel = new ProductTableModel(ui->productListView);
     productModel->setTable("products");
     if (!productModel->select()) {
@@ -37,20 +37,36 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->productListView->setModel(filterModel);
     ui->productListView->setModelColumn(1);
 
-    transactionModel = new QSqlTableModel(ui->transactionTableView);
-    transactionModel->setTable("sells");
-    transactionModel->setSort(2, Qt::DescendingOrder);
-    transactionModel->setHeaderData(1, Qt::Horizontal, tr("Amount"));
-    transactionModel->setHeaderData(2,Qt::Horizontal, tr("Time"));
+    //Sale Record View
+    saleModel = new QSqlTableModel(ui->saleTableView);
+    saleModel->setTable("sales");
+    saleModel->setSort(2, Qt::DescendingOrder);
+    saleModel->setHeaderData(1, Qt::Horizontal, tr("Amount"));
+    saleModel->setHeaderData(2,Qt::Horizontal, tr("Time"));
 
-    if (!transactionModel->select()) {
-        showError(transactionModel->lastError());
+    if (!saleModel->select()) {
+        showError(saleModel->lastError());
         return;
     }
+    ui->saleTableView->setModel(saleModel);
+    ui->saleTableView->hideColumn(0);
+    ui->saleTableView->hideColumn(3);
 
-    ui->transactionTableView->setModel(transactionModel);
-    ui->transactionTableView->hideColumn(0);
-    ui->transactionTableView->hideColumn(3);
+    purchaseModel = new QSqlRelationalTableModel(ui->purchaseTableView);
+    purchaseModel->setTable("purchases");
+    purchaseModel->setRelation(4, QSqlRelation("providers","id","name"));
+    purchaseModel->sort(2, Qt::DescendingOrder);
+    purchaseModel->setHeaderData(1, Qt::Horizontal, tr("Amount"));
+    purchaseModel->setHeaderData(2, Qt::Horizontal, tr("Time"));
+    purchaseModel->setHeaderData(4, Qt::Horizontal, tr("Provider"));
+    if (!purchaseModel->select()) {
+        showError(purchaseModel->lastError());
+        return;
+    }
+    ui->purchaseTableView->setModel(purchaseModel);
+    ui->purchaseTableView->hideColumn(0);
+    ui->purchaseTableView->hideColumn(3);
+
 
     connect(ui->productListView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
             this, SLOT(handleSelectionChanged(QItemSelection)));
@@ -83,7 +99,7 @@ void MainWindow::focusToProduct(){
 
 void MainWindow::refreshTransactionList(){
     QString f = QString("id_product = %1").arg(productIndex+1);
-    transactionModel->setFilter(f);
+    saleModel->setFilter(f);
 }
 
 
@@ -103,22 +119,22 @@ void MainWindow::on_inputPushButton_clicked()
         return;
     }
     if(!minus.isEmpty()){
-        QVariant v = transactionModel->record(3).value(0);
+        QVariant v = saleModel->record(3).value(0);
         qDebug() << v;
-        v = transactionModel->record(3).value(1);
+        v = saleModel->record(3).value(1);
         qDebug() << v;
-        v = transactionModel->record(3).value(2);
+        v = saleModel->record(3).value(2);
         qDebug() << v;
-        v = transactionModel->record(3).value(3);
+        v = saleModel->record(3).value(3);
         qDebug() << v;
-        QSqlRecord record = transactionModel->record();
-        transactionModel->insertRecord(1,record);
+        QSqlRecord record = saleModel->record();
+        saleModel->insertRecord(1,record);
 //        QVariant index = productModel->record(productIndex).value(0);
-//        QSqlRecord record = transactionModel->record();
+//        QSqlRecord record = saleModel->record();
 //        record.setValue(1, QVariant(minus.toInt()));
 //        record.setValue(2, QVariant(QDateTime::currentDateTime()));
 //        record.setValue(3, index);
-//        transactionModel->insertRecord(1,record);
+//        saleModel->insertRecord(1,record);
     }
 }
 

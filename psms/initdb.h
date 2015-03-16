@@ -16,14 +16,14 @@ void addProvider(QSqlQuery &q, const QString &name){
     q.exec();
 }
 
-void addSell(QSqlQuery &q, int amount, const QDateTime &time, const QVariant &productID){
+void addSale(QSqlQuery &q, int amount, const QDateTime &time, const QVariant &productID){
     q.addBindValue(amount);
     q.addBindValue(time);
     q.addBindValue(productID);
     q.exec();
 }
 
-void addBuy(QSqlQuery &q, int amount, const QDateTime &time, const QVariant &productID, int providerID){
+void addPurchase(QSqlQuery &q, int amount, const QDateTime &time, const QVariant &productID, int providerID){
     q.addBindValue(amount);
     q.addBindValue(time);
     q.addBindValue(productID);
@@ -63,11 +63,11 @@ QSqlError initDb()
     QSqlQuery q;
     if (!q.exec(QLatin1String("create table products(id integer primary key, title varchar not null, price float not null, stock integer check(stock>=0) default 0)")))
         return q.lastError();
-    if (!q.exec(QLatin1String("create table sells(id integer primary key, amount integer, time datetime, id_product integer, foreign key(id_product) references products(id))")))
+    if (!q.exec(QLatin1String("create table sales(id integer primary key, amount integer, time datetime, id_product integer, foreign key(id_product) references products(id))")))
         return q.lastError();
     if (!q.exec(QLatin1String("create table providers(id integer primary key, name varchar not null)")))
         return q.lastError();
-    if (!q.exec(QLatin1String("create table buys(id integer primary key, amount integer, time datetime, id_product integer, id_provider integer, foreign key(id_product) references products(id),foreign key(id_provider) references providers(id))")))
+    if (!q.exec(QLatin1String("create table purchases(id integer primary key, amount integer, time datetime, id_product integer, id_provider integer, foreign key(id_product) references products(id),foreign key(id_provider) references providers(id))")))
         return q.lastError();
 
 
@@ -101,10 +101,10 @@ QSqlError initDb()
             transactTime << dt;
         }
         qSort(transactTime);
-        if (!q.prepare(QLatin1String("insert into sells(amount, time, id_product) values(?, ?, ?)")))
+        if (!q.prepare(QLatin1String("insert into sales(amount, time, id_product) values(?, ?, ?)")))
             return q.lastError();
         for(int i = 0; i < 100; i++){
-            addSell(q, randomInt(1,10), transactTime[i], productID);
+            addSale(q, randomInt(1,10), transactTime[i], productID);
         }
 
         transactTime.clear();
@@ -115,10 +115,10 @@ QSqlError initDb()
             transactTime << dt;
         }
         qSort(transactTime);
-        if (!q.prepare(QLatin1String("insert into buys(amount, time, id_product, id_provider) values(?, ?, ?, ?)")))
+        if (!q.prepare(QLatin1String("insert into purchases(amount, time, id_product, id_provider) values(?, ?, ?, ?)")))
             return q.lastError();
         for(int i = 0; i < 10; i++){
-            addBuy(q, randomInt(100,200), transactTime[i], productID, randomInt(1, providers.size()));
+            addPurchase(q, randomInt(100,200), transactTime[i], productID, randomInt(1, providers.size()));
         }
     }
 

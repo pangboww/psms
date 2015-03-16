@@ -34,7 +34,8 @@ private:
     Ui::MainWindow *ui;
     ProductTableModel *productModel;
     QSortFilterProxyModel *filterModel;
-    QSqlTableModel *transactionModel;
+    QSqlTableModel *saleModel;
+    QSqlRelationalTableModel *purchaseModel;
     int productIndex;
     void showError(const QSqlError &err);
 };
