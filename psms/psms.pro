@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     addproductdialog.cpp \
     addproviderdialog.cpp \
     providertablemodel.cpp \
-    saletablemodel.cpp
+    saletablemodel.cpp \
+    purchasetablemodel.cpp
 
 HEADERS  += mainwindow.h \
     initdb.h \
@@ -27,7 +28,8 @@ HEADERS  += mainwindow.h \
     addproductdialog.h \
     addproviderdialog.h \
     providertablemodel.h \
-    saletablemodel.h
+    saletablemodel.h \
+    purchasetablemodel.h
 
 FORMS    += mainwindow.ui \
     addproductdialog.ui \

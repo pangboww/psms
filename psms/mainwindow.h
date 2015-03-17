@@ -37,6 +37,8 @@ private slots:
     void on_addProviderButton_clicked();
     void on_sellPushButton_clicked();
 
+    void on_buyPushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     ProductTableModel *productModel;

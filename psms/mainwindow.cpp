@@ -188,3 +188,14 @@ void MainWindow::on_sellPushButton_clicked()
         focusToProduct();
     }
 }
+
+void MainWindow::on_buyPushButton_clicked()
+{
+    if(!ui->buyEdit->text().isEmpty()){
+        int amount =  ui->buyEdit->text().toInt();
+        if(amount == 0)return;
+
+        productModel->buy(amount, productIndex);
+        focusToProduct();
+    }
+}
