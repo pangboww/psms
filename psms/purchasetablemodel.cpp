@@ -3,7 +3,7 @@
 PurchaseTableModel::PurchaseTableModel(QWidget *parent):
     QSqlRelationalTableModel(parent)
 {
-
+    setEditStrategy(OnManualSubmit);
 }
 
 PurchaseTableModel::~PurchaseTableModel()
@@ -18,14 +18,13 @@ void PurchaseTableModel::addPurchaseRecord(int productID, int providerID, int am
            qDebug() << "insertPurchaseRecord:" << lastError().text();
            return;
     }
-    qDebug() << rowCount() << "\n";
 
     QDateTime now = QDateTime::currentDateTime();
-    qDebug() << data(index(r,0));
     setData(index(r, 1), amount);
-//    setData(index(r, 2), now);
+    setData(index(r, 2), now.toString("yyyy-MM-dd HH:mm:ss"));
     setData(index(r, 3), productID);
     setData(index(r, 4), providerID);
+    qDebug() << "provider:"<<providerID;
 
     if(submitAll()) {
         bool y = database().commit();
@@ -36,7 +35,5 @@ void PurchaseTableModel::addPurchaseRecord(int productID, int providerID, int am
                     "The database reported an error: " <<
                     lastError().text();
     }
-
-
 }
 

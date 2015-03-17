@@ -3,7 +3,7 @@
 ProviderTableModel::ProviderTableModel(QWidget *parent):
     QSqlTableModel(parent)
 {
-
+    setEditStrategy(OnManualSubmit);
 }
 
 ProviderTableModel::~ProviderTableModel()

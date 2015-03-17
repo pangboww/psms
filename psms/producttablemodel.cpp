@@ -3,7 +3,7 @@
 ProductTableModel::ProductTableModel(QWidget *parent):
     QSqlTableModel(parent)
 {
-
+    setEditStrategy(OnManualSubmit);
 }
 
 ProductTableModel::~ProductTableModel()
@@ -19,7 +19,6 @@ void ProductTableModel::addProduct(QString title, QString price, QString stock){
            qDebug() << "insertProduct:" << lastError().text();
            return;
     }
-    qDebug() << rowCount() << "\n";
 
     setData(index(r, 1), title);
     setData(index(r, 2), price);

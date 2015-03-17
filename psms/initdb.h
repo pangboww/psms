@@ -18,14 +18,14 @@ void addProvider(QSqlQuery &q, const QString &name){
 
 void addSale(QSqlQuery &q, int amount, const QDateTime &time, const QVariant &productID){
     q.addBindValue(amount);
-    q.addBindValue(time);
+    q.addBindValue(time.toString("yyyy-MM-dd HH:mm:ss"));
     q.addBindValue(productID);
     q.exec();
 }
 
 void addPurchase(QSqlQuery &q, int amount, const QDateTime &time, const QVariant &productID, int providerID){
     q.addBindValue(amount);
-    q.addBindValue(time);
+    q.addBindValue(time.toString("yyyy-MM-dd HH:mm:ss"));
     q.addBindValue(productID);
     q.addBindValue(providerID);
     q.exec();
@@ -36,7 +36,9 @@ float randomFloat(float a, float b) {
     float random = ((float) rand()) / (float) RAND_MAX;
     float diff = b - a;
     float r = random * diff;
-    return a + r;
+    float size = a + r;
+    QString str = QString::number(size, 'f', 2);
+    return str.toFloat();
 }
 
 int randomInt(int a, int b){
@@ -63,11 +65,11 @@ QSqlError initDb()
     QSqlQuery q;
     if (!q.exec(QLatin1String("create table products(id integer primary key, title varchar not null, price float not null, stock integer check(stock>=0) default 0)")))
         return q.lastError();
-    if (!q.exec(QLatin1String("create table sales(id integer primary key, amount integer, time datetime, id_product integer, foreign key(id_product) references products(id))")))
+    if (!q.exec(QLatin1String("create table sales(id integer primary key, amount integer, time text, id_product integer, foreign key(id_product) references products(id))")))
         return q.lastError();
     if (!q.exec(QLatin1String("create table providers(id integer primary key, name varchar not null)")))
         return q.lastError();
-    if (!q.exec(QLatin1String("create table purchases(id integer primary key, amount integer, time datetime, id_product integer, id_provider integer, foreign key(id_product) references products(id),foreign key(id_provider) references providers(id))")))
+    if (!q.exec(QLatin1String("create table purchases(id integer primary key, amount integer, time text, id_product integer, id_provider integer, foreign key(id_product) references products(id),foreign key(id_provider) references providers(id))")))
         return q.lastError();
 
 

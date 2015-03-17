@@ -180,8 +180,9 @@ void MainWindow::on_sellPushButton_clicked()
 {
     if(!ui->sellEdit->text().isEmpty()){
         int amount =  ui->sellEdit->text().toInt();
+        int productID = productModel->itemData(productModel->index(productIndex, 0))[0].toInt();
         if(amount == 0)return;
-        saleModel->addSaleRecord(productIndex,amount);
+        saleModel->addSaleRecord(productID,amount);
         refreshTransactionList();
         productModel->sell(amount, productIndex);
         focusToProduct();
@@ -195,6 +196,7 @@ void MainWindow::on_buyPushButton_clicked()
         if(amount == 0)return;
         int productID = productModel->itemData(productModel->index(productIndex, 0))[0].toInt();
         purchaseModel->addPurchaseRecord(productID,providerIndex,amount);
+        refreshTransactionList();
         productModel->buy(amount, productIndex);
         focusToProduct();
     }
