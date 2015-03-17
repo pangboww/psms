@@ -6,8 +6,7 @@
 #include <QModelIndex>
 #include <QtDebug>
 #include <QAbstractItemView>
-#include <QDateTime>
-//#include <QSqlRecord>
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -53,7 +52,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->saleTableView->hideColumn(3);
 
     //Purchase Record View
-    purchaseModel = new QSqlRelationalTableModel(ui->purchaseTableView);
+    purchaseModel = new PurchaseTableModel(ui->purchaseTableView);
     purchaseModel->setTable("purchases");
     purchaseModel->setRelation(4, QSqlRelation("providers","id","name"));
     purchaseModel->sort(2, Qt::DescendingOrder);
@@ -194,7 +193,8 @@ void MainWindow::on_buyPushButton_clicked()
     if(!ui->buyEdit->text().isEmpty()){
         int amount =  ui->buyEdit->text().toInt();
         if(amount == 0)return;
-
+        int productID = productModel->itemData(productModel->index(productIndex, 0))[0].toInt();
+        purchaseModel->addPurchaseRecord(productID,providerIndex,amount);
         productModel->buy(amount, productIndex);
         focusToProduct();
     }

@@ -9,6 +9,7 @@
 #include <addproviderdialog.h>
 #include <providertablemodel.h>
 #include <saletablemodel.h>
+#include <purchasetablemodel.h>
 
 namespace Ui {
 class MainWindow;
@@ -45,7 +46,7 @@ private:
     QSortFilterProxyModel *filterModel;
     ProviderTableModel *providerModel;
     SaleTableModel *saleModel;
-    QSqlRelationalTableModel *purchaseModel;
+    PurchaseTableModel *purchaseModel;
     int productIndex;
     int providerIndex;
     void showError(const QSqlError &err);

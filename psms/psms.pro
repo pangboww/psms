@@ -15,7 +15,6 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    producttablemodel.cpp \
     addproductdialog.cpp \
     addproviderdialog.cpp \
     providertablemodel.cpp \
@@ -24,7 +23,6 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     initdb.h \
-    producttablemodel.h \
     addproductdialog.h \
     addproviderdialog.h \
     providertablemodel.h \
