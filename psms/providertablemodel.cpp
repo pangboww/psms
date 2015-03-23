@@ -18,8 +18,10 @@ void ProviderTableModel::addProvider(QString name){
     if(!insertRows(r, 1)) return;
 
     setData(index(r, 1), name);
+
     if(submitAll()) {
-        database().commit();
+        bool c = database().commit();
+        if (c) qDebug()<<"Insert provider successfully!";
     } else {
         database().rollback();
         qDebug() << "Database Write Error" <<

@@ -93,24 +93,44 @@ QSqlError initDb()
     foreach (QString product, products){
         if (!q.prepare(QLatin1String("insert into products(title, price, stock) values(?, ?, ?)")))
             return q.lastError();
-        QVariant productID = addProduct(q, product, randomFloat(0, 10.0), randomInt(0, 500));
+        QVariant productID = addProduct(q, product, randomFloat(1.0, 10.0), randomInt(0, 500));
 
         QList<QDateTime> transactTime;
-        for(int i = 0; i < 100; i++){
+        int transactCount, total;
+        transactCount = randomInt(400,500);
+        total = transactCount;
+        for(int i = 0; i < transactCount; i++){
             QTime t(randomInt(9,18), randomInt(0,60), randomInt(0,60));
             QDate d(randomInt(2010,2015), randomInt(1,13), randomInt(1,29));
+            QDateTime dt(d, t);
+            transactTime << dt;
+        }
+        transactCount = randomInt(70,130);
+        total += transactCount;
+        for(int i = 0; i < transactCount; i++){
+            QTime t(randomInt(9,18), randomInt(0,60), randomInt(0,60));
+            QDate d(2015, randomInt(1,3), randomInt(1,29));
+            QDateTime dt(d, t);
+            transactTime << dt;
+        }
+        transactCount = randomInt(30,80);
+        total += transactCount;
+        for(int i = 0; i < transactCount; i++){
+            QTime t(randomInt(9,18), randomInt(0,60), randomInt(0,60));
+            QDate d(2015, 3, randomInt(1,23));
             QDateTime dt(d, t);
             transactTime << dt;
         }
         qSort(transactTime);
         if (!q.prepare(QLatin1String("insert into sales(amount, time, id_product) values(?, ?, ?)")))
             return q.lastError();
-        for(int i = 0; i < 100; i++){
+        for(int i = 0; i < total; i++){
             addSale(q, randomInt(1,10), transactTime[i], productID);
         }
 
         transactTime.clear();
-        for(int i = 0; i < 10; i++){
+        transactCount = randomInt(10,20);
+        for(int i = 0; i < transactCount; i++){
             QTime t(randomInt(9,18), randomInt(0,60), randomInt(0,60));
             QDate d(randomInt(2010,2015), randomInt(1,13), randomInt(1,29));
             QDateTime dt(d, t);
@@ -119,13 +139,10 @@ QSqlError initDb()
         qSort(transactTime);
         if (!q.prepare(QLatin1String("insert into purchases(amount, time, id_product, id_provider) values(?, ?, ?, ?)")))
             return q.lastError();
-        for(int i = 0; i < 10; i++){
+        for(int i = 0; i < transactCount; i++){
             addPurchase(q, randomInt(100,200), transactTime[i], productID, randomInt(1, providers.size()));
         }
     }
-
-
-
     return QSqlError();
 }
 

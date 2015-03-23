@@ -26,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
     productIndex = 0;
     productModel = new ProductTableModel(ui->productListView);
     productModel->setTable("products");
+    productModel->setSort(1, Qt::AscendingOrder);
     if (!productModel->select()) {
         showError(productModel->lastError());
         return;
@@ -55,6 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
     purchaseModel = new PurchaseTableModel(ui->purchaseTableView);
     purchaseModel->setTable("purchases");
     purchaseModel->setRelation(4, QSqlRelation("providers","id","name"));
+    purchaseModel->setJoinMode(QSqlRelationalTableModel::LeftJoin);
     purchaseModel->sort(2, Qt::DescendingOrder);
     purchaseModel->setHeaderData(1, Qt::Horizontal, tr("Amount"));
     purchaseModel->setHeaderData(2, Qt::Horizontal, tr("Time"));
@@ -108,6 +110,7 @@ void MainWindow::focusToProduct(){
     ui->label_title->setText(title.toString());
     ui->label_price->setText(price.toString());
     ui->label_stock->setText(stock.toString());
+
 }
 
 void MainWindow::refreshTransactionList(){
@@ -115,6 +118,13 @@ void MainWindow::refreshTransactionList(){
     QString f = QString("id_product = %1").arg(productID);
     saleModel->setFilter(f);
     purchaseModel->setFilter(f);
+
+    QVariant sale = saleModel->getTotalSaleOf(SaleTableModel::lastOneWeek);
+    ui->label_last_week->setText(sale.toString());
+    sale = saleModel->getTotalSaleOf(SaleTableModel::lastOneMonth);
+    ui->label_last_month->setText(sale.toString());
+    sale = saleModel->getTotalSaleOf(SaleTableModel::lastOneYear);
+    ui->label_last_year->setText(sale.toString());
 }
 
 
@@ -169,6 +179,7 @@ void MainWindow::confirmAddProvider(QString name){
     providerModel->addProvider(name);
     providerModel->select();
     ui->providerBox->setCurrentIndex(0);
+    purchaseModel->select();
 }
 
 void MainWindow::handleProviderChanged(int i){

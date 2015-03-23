@@ -34,3 +34,50 @@ void SaleTableModel::addSaleRecord(int productID, int amount){
                     lastError().text();
     }
 }
+
+int SaleTableModel::getTotalSaleOf(dateRange range){
+    int r = rowCount();
+    int totalSale = 0;
+    QDateTime end = QDateTime::currentDateTime();
+    QDateTime begin;
+    switch (range) {
+    case lastOneWeek:
+        begin = end.addDays(-7);
+        end = QDateTime::currentDateTime();
+        for(int i = 0; i<r; i++){
+            QDateTime dt = data(index(i, 2)).toDateTime();
+            if(dt>=begin && dt<=end){
+                totalSale += data(index(i, 1)).toInt();
+            }
+        }
+        return totalSale;
+        break;
+    case lastOneMonth:
+        begin = end.addMonths(-1);
+        end = QDateTime::currentDateTime();
+        for(int i = 0; i<r; i++){
+            QDateTime dt = data(index(i, 2)).toDateTime();
+            if(dt>=begin && dt<=end){
+                totalSale += data(index(i, 1)).toInt();
+            }
+        }
+        return totalSale;
+        break;
+    case lastOneYear:
+        begin = end.addYears(-1);
+        end = QDateTime::currentDateTime();
+        for(int i = 0; i<r; i++){
+            QDateTime dt = data(index(i, 2)).toDateTime();
+            if(dt>=begin && dt<=end){
+                totalSale += data(index(i, 1)).toInt();
+            }
+        }
+        return totalSale;
+        break;
+    default:
+        break;
+    }
+
+}
+
+
