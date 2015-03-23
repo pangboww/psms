@@ -9,11 +9,12 @@ class SaleTableModel : public QSqlTableModel
     Q_OBJECT
 
 public:
-    enum dateRange {lastOneWeek, lastOneMonth, lastOneYear};
+    enum dateRange {lastOneWeek, lastTwoWeeks, lastOneMonth, lastOneYear};
     SaleTableModel(QWidget *parent = 0);
     ~SaleTableModel();
     void addSaleRecord(int productID,int amount);
     int getTotalSaleOf(dateRange range);
+    QVector<double> getSalesOf(dateRange range);
 };
 
 

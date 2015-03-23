@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QtWidgets>
 #include <QtSql>
+#include <qcustomplot.h>
 #include <producttablemodel.h>
 #include <addproductdialog.h>
 #include <addproviderdialog.h>
@@ -50,6 +51,10 @@ private:
     int productIndex;
     int providerIndex;
     void showError(const QSqlError &err);
+
+    QVector<double> lastTwoWeeksSale;
+    QVector<double> lastOneYearSale;
+    void setUpPlot();
 };
 
 #endif // MAINWINDOW_H

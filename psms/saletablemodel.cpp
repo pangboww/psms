@@ -75,9 +75,47 @@ int SaleTableModel::getTotalSaleOf(dateRange range){
         return totalSale;
         break;
     default:
+        return 0;
         break;
     }
-
 }
 
+QVector<double> SaleTableModel::getSalesOf(dateRange range){
+    int r = rowCount();
+    QDateTime timeIndex = QDateTime::currentDateTime();
+    QVector<double> sales;
+    switch (range) {
+    case lastTwoWeeks:
+        for(int i=0; i<14; i++){
+            timeIndex = timeIndex.addDays(-i);
+            double sale = 0;
+            for(int j = 0; j<r; j++){
+                QDateTime dt = data(index(j,2)).toDateTime();
+                if(dt.date().day() == timeIndex.date().day()){
+                    sale += data(index(j, 1)).toDouble();
+                }
+            }
+            sales << sale;
+        }
+        return sales;
+        break;
+    case lastOneYear:
+        for(int i=0; i<12; i++){
+            timeIndex = timeIndex.addMonths(-i);
+            double sale = 0;
+            for(int j = 0; j<r; j++){
+                QDateTime dt = data(index(j,2)).toDateTime();
+                if(dt.date().month() == timeIndex.date().month()){
+                    sale += data(index(j, 1)).toDouble();
+                }
+            }
+            sales << sale;
+        }
+        return sales;
+        break;
+    default:
+        return sales;
+        break;
+    }
+}
 

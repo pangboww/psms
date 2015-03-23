@@ -7,7 +7,7 @@
 QT       += core gui
 QT       += sql
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 TARGET = psms
 TEMPLATE = app
@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     providertablemodel.cpp \
     saletablemodel.cpp \
     purchasetablemodel.cpp \
-    producttablemodel.cpp
+    producttablemodel.cpp \
+    qcustomplot.cpp
 
 HEADERS  += mainwindow.h \
     initdb.h \
@@ -29,7 +30,8 @@ HEADERS  += mainwindow.h \
     providertablemodel.h \
     saletablemodel.h \
     purchasetablemodel.h \
-    producttablemodel.h
+    producttablemodel.h \
+    qcustomplot.h
 
 FORMS    += mainwindow.ui \
     addproductdialog.ui \

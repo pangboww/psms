@@ -80,6 +80,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->providerBox->setModel(providerModel);
     ui->providerBox->setModelColumn(1);
 
+
+
+
     connect(ui->productListView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
             this, SLOT(handleSelectionChanged(QItemSelection)));
     connect(this, SIGNAL(productIndexChanged()),
@@ -91,6 +94,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     emit productIndexChanged();
     ui->providerBox->currentIndexChanged(0);
+
 }
 
 MainWindow::~MainWindow()
@@ -111,6 +115,16 @@ void MainWindow::focusToProduct(){
     ui->label_price->setText(price.toString());
     ui->label_stock->setText(stock.toString());
 
+    QVariant sale = saleModel->getTotalSaleOf(SaleTableModel::lastOneWeek);
+    ui->label_last_week->setText(sale.toString());
+    sale = saleModel->getTotalSaleOf(SaleTableModel::lastOneMonth);
+    ui->label_last_month->setText(sale.toString());
+    sale = saleModel->getTotalSaleOf(SaleTableModel::lastOneYear);
+    ui->label_last_year->setText(sale.toString());
+
+    lastTwoWeeksSale = saleModel->getSalesOf(SaleTableModel::lastTwoWeeks);
+    lastOneYearSale = saleModel->getSalesOf(SaleTableModel::lastOneYear);
+    setUpPlot();
 }
 
 void MainWindow::refreshTransactionList(){
@@ -118,13 +132,6 @@ void MainWindow::refreshTransactionList(){
     QString f = QString("id_product = %1").arg(productID);
     saleModel->setFilter(f);
     purchaseModel->setFilter(f);
-
-    QVariant sale = saleModel->getTotalSaleOf(SaleTableModel::lastOneWeek);
-    ui->label_last_week->setText(sale.toString());
-    sale = saleModel->getTotalSaleOf(SaleTableModel::lastOneMonth);
-    ui->label_last_month->setText(sale.toString());
-    sale = saleModel->getTotalSaleOf(SaleTableModel::lastOneYear);
-    ui->label_last_year->setText(sale.toString());
 }
 
 
@@ -211,4 +218,84 @@ void MainWindow::on_buyPushButton_clicked()
         productModel->buy(amount, productIndex);
         focusToProduct();
     }
+}
+
+void MainWindow::setUpPlot(){
+    ui->two_weeks_sale_plot->clearPlottables();
+    ui->one_year_sale_plot->clearPlottables();
+
+    QCPBars *twoWeeks = new QCPBars(ui->two_weeks_sale_plot->xAxis, ui->two_weeks_sale_plot->yAxis);
+    QCPBars *oneYear = new QCPBars(ui->one_year_sale_plot->xAxis, ui->one_year_sale_plot->yAxis);
+    ui->two_weeks_sale_plot->addPlottable(twoWeeks);
+    ui->one_year_sale_plot->addPlottable(oneYear);
+    // set names and colors:
+    QPen pen;
+    pen.setWidthF(1.2);
+
+    twoWeeks->setName("Two Weeks sales");
+    oneYear->setName("One Year Sales");
+    pen.setColor(QColor(150, 222, 0));
+    twoWeeks->setPen(pen);
+    twoWeeks->setBrush(QColor(150, 222, 0, 70));
+
+    // prepare x axis with country labels:
+    QVector<double> tick1;
+    QVector<double> tick2;
+//    QVector<QString> labels;
+    tick1 << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9 << 10 << 11 << 12 << 13 << 14;
+    tick2 << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9 << 10 << 11 << 12;
+//    labels << "USA" << "Japan" << "Germany" << "France" << "UK" << "Italy" << "Canada";
+    ui->two_weeks_sale_plot->xAxis->setAutoTicks(true);
+    ui->two_weeks_sale_plot->xAxis->setAutoTickLabels(true);
+    ui->two_weeks_sale_plot->xAxis->setTickVector(tick1);
+//    ui->customPlot->xAxis->setTickVectorLabels(labels);
+    ui->two_weeks_sale_plot->xAxis->setTickLabelRotation(60);
+    ui->two_weeks_sale_plot->xAxis->setSubTickCount(0);
+    ui->two_weeks_sale_plot->xAxis->setTickLength(0, 4);
+    ui->two_weeks_sale_plot->xAxis->grid()->setVisible(true);
+    ui->two_weeks_sale_plot->xAxis->setRange(0, 15);
+
+    ui->one_year_sale_plot->xAxis->setAutoTicks(false);
+    ui->one_year_sale_plot->xAxis->setAutoTickLabels(true);
+    ui->one_year_sale_plot->xAxis->setTickVector(tick2);
+//    ui->customPlot->xAxis->setTickVectorLabels(labels);
+    ui->one_year_sale_plot->xAxis->setTickLabelRotation(60);
+    ui->one_year_sale_plot->xAxis->setSubTickCount(0);
+    ui->one_year_sale_plot->xAxis->setTickLength(0, 4);
+    ui->one_year_sale_plot->xAxis->grid()->setVisible(true);
+    ui->one_year_sale_plot->xAxis->setRange(0, 13);
+
+    // prepare y axis:
+    int max = 0;
+    foreach (double i, lastTwoWeeksSale) {
+        if(i > max) max = i;
+    }
+
+    ui->two_weeks_sale_plot->yAxis->setRange(0, max);
+    ui->two_weeks_sale_plot->yAxis->setPadding(5);
+    ui->two_weeks_sale_plot->yAxis->setLabel("Last Two Weeks Sales");
+    ui->two_weeks_sale_plot->yAxis->grid()->setSubGridVisible(true);
+
+    max = 0;
+    foreach (double i, lastOneYearSale) {
+        if(i > max) max = i;
+    }
+    ui->one_year_sale_plot->yAxis->setRange(0, max);
+    ui->one_year_sale_plot->yAxis->setPadding(5);
+    ui->one_year_sale_plot->yAxis->setLabel("Last One Year Sales");
+    ui->one_year_sale_plot->yAxis->grid()->setSubGridVisible(true);
+
+    QPen gridPen;
+    gridPen.setStyle(Qt::SolidLine);
+    gridPen.setColor(QColor(0, 0, 0, 25));
+    ui->two_weeks_sale_plot->yAxis->grid()->setPen(gridPen);
+    ui->one_year_sale_plot->yAxis->grid()->setPen(gridPen);
+    gridPen.setStyle(Qt::DotLine);
+    ui->two_weeks_sale_plot->yAxis->grid()->setSubGridPen(gridPen);
+    ui->one_year_sale_plot->yAxis->grid()->setSubGridPen(gridPen);
+    twoWeeks->setData(tick1, lastTwoWeeksSale);
+    oneYear->setData(tick2, lastOneYearSale);
+
+    ui->one_year_sale_plot->replot();
+    ui->two_weeks_sale_plot->replot();
 }
