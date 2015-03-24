@@ -117,7 +117,7 @@ QSqlError initDb()
         total += transactCount;
         for(int i = 0; i < transactCount; i++){
             QTime t(randomInt(9,18), randomInt(0,60), randomInt(0,60));
-            QDate d(2015, 3, randomInt(1,23));
+            QDate d(2015, 3, randomInt(1,24));
             QDateTime dt(d, t);
             transactTime << dt;
         }

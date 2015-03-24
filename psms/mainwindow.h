@@ -4,13 +4,13 @@
 #include <QMainWindow>
 #include <QtWidgets>
 #include <QtSql>
-#include <qcustomplot.h>
-#include <producttablemodel.h>
-#include <addproductdialog.h>
-#include <addproviderdialog.h>
-#include <providertablemodel.h>
-#include <saletablemodel.h>
-#include <purchasetablemodel.h>
+#include "qcustomplot.h"
+#include "producttablemodel.h"
+#include "addproductdialog.h"
+#include "addproviderdialog.h"
+#include "providertablemodel.h"
+#include "saletablemodel.h"
+#include "purchasetablemodel.h"
 
 namespace Ui {
 class MainWindow;

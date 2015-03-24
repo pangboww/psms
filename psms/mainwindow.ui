@@ -84,7 +84,7 @@
          <bool>true</bool>
         </property>
         <property name="currentIndex">
-         <number>2</number>
+         <number>0</number>
         </property>
         <property name="usesScrollButtons">
          <bool>false</bool>
@@ -301,7 +301,6 @@
            </layout>
           </item>
          </layout>
-         <zorder>horizontalLayoutWidget</zorder>
          <zorder></zorder>
         </widget>
         <widget class="QWidget" name="saleRecordTab">
