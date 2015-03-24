@@ -48,10 +48,11 @@ MainWindow::MainWindow(QWidget *parent) :
         showError(saleModel->lastError());
         return;
     }
+
     ui->saleTableView->setModel(saleModel);
     ui->saleTableView->hideColumn(0);
     ui->saleTableView->hideColumn(3);
-
+    ui->saleTableView->setColumnWidth(2,150);
     //Purchase Record View
     purchaseModel = new PurchaseTableModel(ui->purchaseTableView);
     purchaseModel->setTable("purchases");
@@ -68,6 +69,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->purchaseTableView->setModel(purchaseModel);
     ui->purchaseTableView->hideColumn(0);
     ui->purchaseTableView->hideColumn(3);
+    ui->purchaseTableView->setColumnWidth(1,70);
+    ui->purchaseTableView->setColumnWidth(2,150);
 
     //Provider Choose ComboBox
     providerModel = new ProviderTableModel(ui->providerBox);
@@ -228,7 +231,6 @@ void MainWindow::setUpPlot(){
     QCPBars *oneYear = new QCPBars(ui->one_year_sale_plot->xAxis, ui->one_year_sale_plot->yAxis);
     ui->two_weeks_sale_plot->addPlottable(twoWeeks);
     ui->one_year_sale_plot->addPlottable(oneYear);
-    // set names and colors:
     QPen pen;
     pen.setWidthF(1.2);
 
@@ -238,17 +240,13 @@ void MainWindow::setUpPlot(){
     twoWeeks->setPen(pen);
     twoWeeks->setBrush(QColor(150, 222, 0, 70));
 
-    // prepare x axis with country labels:
     QVector<double> tick1;
     QVector<double> tick2;
-//    QVector<QString> labels;
     tick1 << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9 << 10 << 11 << 12 << 13 << 14;
     tick2 << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9 << 10 << 11 << 12;
-//    labels << "USA" << "Japan" << "Germany" << "France" << "UK" << "Italy" << "Canada";
     ui->two_weeks_sale_plot->xAxis->setAutoTicks(true);
     ui->two_weeks_sale_plot->xAxis->setAutoTickLabels(true);
     ui->two_weeks_sale_plot->xAxis->setTickVector(tick1);
-//    ui->customPlot->xAxis->setTickVectorLabels(labels);
     ui->two_weeks_sale_plot->xAxis->setTickLabelRotation(60);
     ui->two_weeks_sale_plot->xAxis->setSubTickCount(0);
     ui->two_weeks_sale_plot->xAxis->setTickLength(0, 4);
@@ -258,14 +256,13 @@ void MainWindow::setUpPlot(){
     ui->one_year_sale_plot->xAxis->setAutoTicks(false);
     ui->one_year_sale_plot->xAxis->setAutoTickLabels(true);
     ui->one_year_sale_plot->xAxis->setTickVector(tick2);
-//    ui->customPlot->xAxis->setTickVectorLabels(labels);
     ui->one_year_sale_plot->xAxis->setTickLabelRotation(60);
     ui->one_year_sale_plot->xAxis->setSubTickCount(0);
     ui->one_year_sale_plot->xAxis->setTickLength(0, 4);
     ui->one_year_sale_plot->xAxis->grid()->setVisible(true);
     ui->one_year_sale_plot->xAxis->setRange(0, 13);
 
-    // prepare y axis:
+
     int max = 0;
     foreach (double i, lastTwoWeeksSale) {
         if(i > max) max = i;
