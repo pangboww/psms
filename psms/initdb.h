@@ -3,6 +3,8 @@
 
 #include <QtSql>
 
+
+
 QVariant addProduct(QSqlQuery &q, const QString &title, float price, int stock){
     q.addBindValue(title);
     q.addBindValue(price);

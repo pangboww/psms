@@ -13,16 +13,19 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    //Setup the database to Sqlite
     if (!QSqlDatabase::drivers().contains("QSQLITE"))
         QMessageBox::critical(this, "Unable to load database", "This demo needs the SQLITE driver");
 
+    //Init database
     QSqlError err = initDb();
     if (err.type() != QSqlError::NoError) {
         showError(err);
         return;
     }
 
-    //Product View
+    //Setup Product View
     productIndex = 0;
     productModel = new ProductTableModel(ui->productListView);
     productModel->setTable("products");
@@ -37,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->productListView->setModel(filterModel);
     ui->productListView->setModelColumn(1);
 
-    //Sale Record View
+    //Setup Sale Record View
     saleModel = new SaleTableModel(ui->saleTableView);
     saleModel->setTable("sales");
     saleModel->setSort(2, Qt::DescendingOrder);
@@ -53,7 +56,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->saleTableView->hideColumn(0);
     ui->saleTableView->hideColumn(3);
     ui->saleTableView->setColumnWidth(2,150);
-    //Purchase Record View
+
+
+    //Setup Purchase Record View
     purchaseModel = new PurchaseTableModel(ui->purchaseTableView);
     purchaseModel->setTable("purchases");
     purchaseModel->setRelation(4, QSqlRelation("providers","id","name"));
@@ -72,7 +77,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->purchaseTableView->setColumnWidth(1,70);
     ui->purchaseTableView->setColumnWidth(2,150);
 
-    //Provider Choose ComboBox
+    //Setup Provider Choose ComboBox
     providerModel = new ProviderTableModel(ui->providerBox);
     providerModel->setTable("providers");
     providerModel->sort(1, Qt::AscendingOrder);
@@ -85,7 +90,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
-
+    //Setup connections for mainwindow
     connect(ui->productListView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
             this, SLOT(handleSelectionChanged(QItemSelection)));
     connect(this, SIGNAL(productIndexChanged()),
@@ -111,6 +116,7 @@ void MainWindow::handleSelectionChanged(const QItemSelection& selection){
 }
 
 void MainWindow::focusToProduct(){
+    //Refresh the content of mainwindow
     QVariant title = productModel->record(productIndex).value(1);
     QVariant price = productModel->record(productIndex).value(2);
     QVariant stock = productModel->record(productIndex).value(3);
@@ -131,6 +137,8 @@ void MainWindow::focusToProduct(){
 }
 
 void MainWindow::refreshTransactionList(){
+
+    //refresh transactionlist
     int productID = productModel->itemData(productModel->index(productIndex, 0))[0].toInt();
     QString f = QString("id_product = %1").arg(productID);
     saleModel->setFilter(f);
@@ -140,14 +148,17 @@ void MainWindow::refreshTransactionList(){
 
 void MainWindow::showError(const QSqlError &err)
 {
+    //show error if connect to database wrong
     QMessageBox::critical(this, "Unable to initialize Database",
                 "Error initializing database: " + err.text());
 }
 
 
 
+//call this function if addProductButton is clicked
 void MainWindow::on_addProductButton_clicked()
 {
+    //show a new dialog to let user add product with price and current stock
     AddProductDialog *dialog = new AddProductDialog(this);
     dialog->show();
     connect(dialog,
@@ -156,12 +167,14 @@ void MainWindow::on_addProductButton_clicked()
             SLOT(confirmAddProduct(QString,QString,QString)));
 }
 
+//call this function if user confirm adding function
 void MainWindow::confirmAddProduct(QString title, QString price, QString stock){
     productModel->addProduct(title, price, stock);
     productModel->selectRow(productModel->rowCount());
     productModel->select();
 }
 
+//filter for search function
 void MainWindow::on_lineEdit_textChanged(const QString &arg1)
 {
     QString s = QString(".?%1.?").arg(arg1);
@@ -175,6 +188,8 @@ void MainWindow::on_clearButton_clicked()
     ui->lineEdit->setText("");
 }
 
+
+//call this function if addProviderButton is clicked
 void MainWindow::on_addProviderButton_clicked()
 {
     AddProviderDialog *dialog = new AddProviderDialog(this);
@@ -185,6 +200,7 @@ void MainWindow::on_addProviderButton_clicked()
             SLOT(confirmAddProvider(QString)));
 }
 
+//call this function if user confirm adding provider
 void MainWindow::confirmAddProvider(QString name){
     providerModel->addProvider(name);
     providerModel->select();
@@ -192,11 +208,13 @@ void MainWindow::confirmAddProvider(QString name){
     purchaseModel->select();
 }
 
+//if added new provider, refresh provider list
 void MainWindow::handleProviderChanged(int i){
     providerIndex = providerModel->itemData(providerModel->index(i, 0))[0].toInt();
     qDebug() << providerIndex;
 }
 
+//call this function if sell button is clicked
 void MainWindow::on_sellPushButton_clicked()
 {
     if(!ui->sellEdit->text().isEmpty()){
@@ -210,6 +228,7 @@ void MainWindow::on_sellPushButton_clicked()
     }
 }
 
+//call this function if buy button is clicked
 void MainWindow::on_buyPushButton_clicked()
 {
     if(!ui->buyEdit->text().isEmpty()){
@@ -223,14 +242,19 @@ void MainWindow::on_buyPushButton_clicked()
     }
 }
 
+
 void MainWindow::setUpPlot(){
+    //clean the two plots
     ui->two_weeks_sale_plot->clearPlottables();
     ui->one_year_sale_plot->clearPlottables();
 
+    //set up new QCPBar for two plot
     QCPBars *twoWeeks = new QCPBars(ui->two_weeks_sale_plot->xAxis, ui->two_weeks_sale_plot->yAxis);
     QCPBars *oneYear = new QCPBars(ui->one_year_sale_plot->xAxis, ui->one_year_sale_plot->yAxis);
     ui->two_weeks_sale_plot->addPlottable(twoWeeks);
     ui->one_year_sale_plot->addPlottable(oneYear);
+
+    //set a new pen to draw two plot
     QPen pen;
     pen.setWidthF(1.2);
 
@@ -263,6 +287,7 @@ void MainWindow::setUpPlot(){
     ui->one_year_sale_plot->xAxis->setRange(0, 13);
 
 
+    //pick up the max value in lastTwoWeeksSale and set it as hignest value in plot
     int max = 0;
     foreach (double i, lastTwoWeeksSale) {
         if(i > max) max = i;
@@ -273,6 +298,7 @@ void MainWindow::setUpPlot(){
     ui->two_weeks_sale_plot->yAxis->setLabel("Last Two Weeks Sales");
     ui->two_weeks_sale_plot->yAxis->grid()->setSubGridVisible(true);
 
+    //pick up the max value in lastOneYearSale and set it as hignest value in pl
     max = 0;
     foreach (double i, lastOneYearSale) {
         if(i > max) max = i;
@@ -282,6 +308,7 @@ void MainWindow::setUpPlot(){
     ui->one_year_sale_plot->yAxis->setLabel("Last One Year Sales");
     ui->one_year_sale_plot->yAxis->grid()->setSubGridVisible(true);
 
+    //set up a new pen to draw grid
     QPen gridPen;
     gridPen.setStyle(Qt::SolidLine);
     gridPen.setColor(QColor(0, 0, 0, 25));
@@ -293,6 +320,7 @@ void MainWindow::setUpPlot(){
     twoWeeks->setData(tick1, lastTwoWeeksSale);
     oneYear->setData(tick2, lastOneYearSale);
 
+    //call ui to replot two pictures
     ui->one_year_sale_plot->replot();
     ui->two_weeks_sale_plot->replot();
 }
